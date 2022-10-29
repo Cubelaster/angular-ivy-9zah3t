@@ -1,0 +1,19 @@
+<tree-list
+  #treeChecklistRef
+  [hasCheckbox]="false"
+  [filterFunction]="filterTreeList"
+  [treeData]="articleCategoryTree"
+  [nodeDisplayTemplate]="nodeDisplayTemplate"
+  [isEditable]="true"
+  [defaultItemGenerator]="generateNewItem"
+  [equalityComparator]="equalityComparator"
+  [uniquenessComparator]="uniqenessComparator"
+>
+</tree-list>
+
+<ng-template #nodeDisplayTemplate let-node>
+  <article-category-tree-node
+    [node]="node"
+    [formList]="articleCategoryTreeFormList"
+  ></article-category-tree-node>
+</ng-template>

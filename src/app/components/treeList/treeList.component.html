@@ -1,0 +1,163 @@
+<div class="col-sm-12 tree-checklist">
+  <toolbar *ngIf="filterFunction || isEditable">
+    <div class="actionsContainer">
+      <div class="ag-grid-search-bar" *ngIf="filterFunction">
+        <div class="form-group">
+          <input
+            (input)="filterChanged($event)"
+            matInput
+            [placeholder]="'Search'"
+          />
+        </div>
+      </div>
+
+      <div
+        class="ag-grid-action-buttons-wrapper"
+        *ngIf="isEditable && actionButtons?.length"
+      >
+        <ul style="list-style-type: none;">
+          <li *ngFor="let button of actionButtons">
+            <div class="action-buttons">
+              <div class="buttons">
+                <button
+                  mat-stroked-button
+                  [disabled]="button.disabled"
+                  [color]="button.type"
+                  [attr.data-action]="button.action"
+                  (click)="button.actionMethod()"
+                >
+                  <i *ngIf="button.icon" class="{{ button.icon }}"></i>
+                  <span>{{ button.localizationKey }}</span>
+                </button>
+              </div>
+            </div>
+          </li>
+        </ul>
+        <!-- <action-buttons [buttons]="actionButtons"></action-buttons> -->
+      </div>
+    </div>
+  </toolbar>
+
+  <mat-tree
+    [dataSource]="dataSource"
+    [treeControl]="treeControl"
+    [trackBy]="trackBy"
+  >
+    <mat-tree-node
+      *matTreeNodeDef="let node; when: hasChild"
+      matTreeNodePadding
+    >
+      <button
+        mat-icon-button
+        matTreeNodeToggle
+        [attr.aria-label]="'Toggle ' + node.item"
+      >
+        <mat-icon class="mat-icon-rtl-mirror">
+          {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+        </mat-icon>
+      </button>
+
+      <mat-checkbox
+        *ngIf="hasCheckbox"
+        [checked]="descendantsAllSelected(node)"
+        [indeterminate]="descendantsPartiallySelected(node)"
+        (change)="treeNodeSelectionToggle(node)"
+      >
+        <ng-container
+          [ngTemplateOutlet]="nodeDisplayTemplateRef"
+          [ngTemplateOutletContext]="{
+            $implicit: node
+          }"
+        ></ng-container>
+      </mat-checkbox>
+
+      <ng-container
+        *ngIf="!hasCheckbox"
+        [ngTemplateOutlet]="nodeDisplayTemplateRef"
+        [ngTemplateOutletContext]="{ $implicit: node }"
+      ></ng-container>
+
+      <ul style="list-style-type: none;">
+        <li *ngFor="let button of getItemActionButtons(node)">
+          <div class="action-buttons">
+            <div class="buttons">
+              <button
+                mat-stroked-button
+                [disabled]="button.disabled"
+                [color]="button.type"
+                [attr.data-action]="button.action"
+                (click)="button.actionMethod()"
+              >
+                <i *ngIf="button.icon" class="{{ button.icon }}"></i>
+                <span>{{ button.localizationKey }}</span>
+              </button>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <!-- <action-buttons
+        *ngIf="isEditable"
+        [buttons]="getItemActionButtons(node)"
+      ></action-buttons> -->
+    </mat-tree-node>
+
+    <mat-tree-node
+      style="display: none"
+      *matTreeNodeDef="let node; when: isHidden"
+    >
+      <!-- Hidden node. -->
+    </mat-tree-node>
+
+    <!-- Default part of the SWITCH that this is
+        *matTreeNodeDef is basically a switch statement and returns on first match
+        That's why the order is important
+    -->
+    <mat-tree-node
+      *matTreeNodeDef="let node"
+      matTreeNodeToggle
+      matTreeNodePadding
+    >
+      <button mat-icon-button disabled></button>
+
+      <mat-checkbox
+        *ngIf="hasCheckbox"
+        [checked]="checklistSelection.isSelected(node)"
+        (change)="treeNodeLeafItemSelectionToggle(node)"
+      >
+        <ng-container
+          [ngTemplateOutlet]="nodeDisplayTemplateRef"
+          [ngTemplateOutletContext]="{ $implicit: node }"
+        ></ng-container>
+      </mat-checkbox>
+
+      <ng-container
+        *ngIf="!hasCheckbox"
+        [ngTemplateOutlet]="nodeDisplayTemplateRef"
+        [ngTemplateOutletContext]="{ $implicit: node }"
+      ></ng-container>
+
+      <ul style="list-style-type: none;">
+        <li *ngFor="let button of getItemActionButtons(node)">
+          <div class="action-buttons">
+            <div class="buttons">
+              <button
+                mat-stroked-button
+                [disabled]="button.disabled"
+                [color]="button.type"
+                [attr.data-action]="button.action"
+                (click)="button.actionMethod()"
+              >
+                <i *ngIf="button.icon" class="{{ button.icon }}"></i>
+                <span>{{ button.localizationKey }}</span>
+              </button>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <!-- <action-buttons
+        *ngIf="isEditable"
+        [buttons]="getItemActionButtons(node)"
+      ></action-buttons> -->
+    </mat-tree-node>
+  </mat-tree>
+</div>

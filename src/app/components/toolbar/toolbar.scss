@@ -1,0 +1,17 @@
+:host::ng-deep {
+  .toolbar {
+    position: sticky;
+    top: -10px;
+    margin-top: -10px;
+    padding: 10px 0;
+    z-index: 99;
+    background: var(--tab-content-background);
+    margin-left: -10px;
+    margin-right: -10px;
+    &.grid {
+      .action-buttons {
+        margin-bottom: 0 !important;
+      }
+    }
+  }
+}

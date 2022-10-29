@@ -1,0 +1,23 @@
+:host::ng-deep {
+  .mat-tree {
+    background: transparent;
+  }
+
+  .tree-checklist {
+    padding: 1rem;
+  }
+
+  .actionsContainer {
+    display: flex;
+    margin-bottom: 15px;
+
+    .ag-grid-search-bar {
+      display: flex;
+      flex-grow: 2;
+
+      .form-group {
+        margin: 0;
+      }
+    }
+  }
+}
