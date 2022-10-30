@@ -456,6 +456,28 @@ export class TreeList<T> implements OnChanges {
     ] as Array<ActionButton>;
   };
 
+  generateGUID = (): string => {
+    function s4(): string {
+      return Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1);
+    }
+    return (
+      s4() +
+      s4() +
+      '-' +
+      s4() +
+      '-' +
+      s4() +
+      '-' +
+      s4() +
+      '-' +
+      s4() +
+      s4() +
+      s4()
+    );
+  };
+
   new = (parent?: TreeNode<T>): void => {
     const newItem = this.defaultItemGenerator(parent);
 
@@ -463,8 +485,10 @@ export class TreeList<T> implements OnChanges {
       children: [],
       isLeaf: true,
       isVisible: true,
-      level: parent?.level ?? 0,
+      level: parent?.level ? parent.level + 1 : 0,
       parent,
+      trackByIdentifier:
+        (parent?.trackByIdentifier ?? '_') + this.generateGUID(),
       value: newItem,
     } as TreeNode<T>;
 
@@ -475,11 +499,14 @@ export class TreeList<T> implements OnChanges {
         ? (realParent.children = [...realParent.children, newNode])
         : (realParent.children = [newNode]);
       realParent.isLeaf = false; // Important as it subsequently decides which template to use in html
+      realParent.trackByIdentifier = this.generateGUID(); // Explicit rerender trigger for treelist, check trackByIdentifier docs
 
+      // Immutability is the keyword
       this.dataSource.data = [...this.dataSource.data];
 
       this.treeControl.expand(parent);
     } else {
+      // Immutability is the keyword
       this.dataSource.data = [...this.dataSource.data, newNode];
     }
   };
@@ -494,15 +521,21 @@ export class TreeList<T> implements OnChanges {
       );
       if (parentOfNode.children.length < 1) {
         parentOfNode.isLeaf = true; // Important as it subsequently decides which template to use in html
+        parentOfNode.trackByIdentifier = this.generateGUID(); // Explicit rerender trigger for treelist, check trackByIdentifier docs
         const parent = this.getParentNode(node);
         this.treeControl.expand(parent);
       }
     } else {
+      // Immutability is the keyword
       this.dataSource.data = [
         ...this.dataSource.data.filter((e) => e != realNode),
       ];
     }
 
+    this.nestedNodeMap.delete(node);
+    this.flatNodeMap.delete(node);
+
+    // Immutability is the keyword
     this.dataSource.data = [...this.dataSource.data];
   };
 
